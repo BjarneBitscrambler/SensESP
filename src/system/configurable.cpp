@@ -49,7 +49,7 @@ void Configurable::load_configuration() {
 
   File f = SPIFFS.open(config_path, "r");
   DynamicJsonDocument jsonDoc(
-      1024);  // TODO: set the size of ALL DynamicJsonDocuments throughout the
+      2048);  // TODO: set the size of ALL DynamicJsonDocuments throughout the
               // project
   auto error = deserializeJson(jsonDoc, f);
   if (error) {
@@ -67,7 +67,8 @@ void Configurable::save_configuration() {
   if (config_path == "") {
     debugI("WARNING: Could not save configuration (config_path not set)");
   }
-  DynamicJsonDocument jsonDoc(1024);
+debugI("Saving to %s ", config_path.c_str());
+  DynamicJsonDocument jsonDoc(2048);
   JsonObject obj = jsonDoc.createNestedObject("root");
   get_configuration(obj);
   File f = SPIFFS.open(config_path, "w");
