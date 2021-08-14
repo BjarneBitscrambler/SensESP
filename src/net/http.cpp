@@ -11,6 +11,10 @@
 
 #include "Arduino.h"
 #include "ArduinoJson.h"
+
+#define DYNAMIC_JSON_DOCUMENT_SIZE \
+  2048  // bhansen: defaults to 1024 in AsyncJson.h, which limited HTTP PUT to
+        // 21 values in Curve Interpolator transform
 #include "AsyncJson.h"
 #include "sensesp_app.h"
 #include "system/configurable.h"
@@ -46,7 +50,7 @@ HTTPServer::HTTPServer(std::function<void()> reset_device) {
                             F("PUT to /config not allowed.\n"));
               return;
             }
-
+debugI("PUT handler");
             std::map<String, Configurable*>::iterator it =
                 configurables.find(url_tail);
             if (it == configurables.end()) {
@@ -90,7 +94,7 @@ HTTPServer::HTTPServer(std::function<void()> reset_device) {
 
     AsyncResponseStream* response =
         request->beginResponseStream("application/json");
-    DynamicJsonDocument json_doc(1024);
+    DynamicJsonDocument json_doc(3072); // bhansen: was 1024, which limited Curve Interpolation transform to 11 values.
     JsonObject config = json_doc.createNestedObject("config");
     confable->get_configuration(config);
     json_doc["schema"] = serialized(confable->get_config_schema());
