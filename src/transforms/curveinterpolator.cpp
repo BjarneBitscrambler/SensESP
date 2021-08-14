@@ -62,6 +62,9 @@ void CurveInterpolator::get_configuration(JsonObject& root) {
   JsonArray jSamples = root.createNestedArray("samples");
   for (auto& sample : samples) {
     auto entry = jSamples.createNestedObject();
+    if( entry.isNull() ) {
+      debugE("no memory for sample");
+    }
     entry["input"] = sample.input;
     entry["output"] = sample.output;
   }
@@ -97,6 +100,7 @@ bool CurveInterpolator::set_configuration(const JsonObject& config) {
 
   JsonArray arr = config["samples"];
   if (arr.size() > 0) {
+debugI("New curve interpolation with %d samples", arr.size());
     samples.clear();
     for (auto jentry : arr) {
       auto jObject = jentry.as<JsonObject>();
